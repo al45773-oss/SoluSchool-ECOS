@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoluSchool — Sistema de Reportes</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">🏛️</div>
+      <div class="login-logo-text">
+        <h1>SoluSchool</h1>
+        <p>Sistema de Reportes de Instalaciones</p>
+      </div>
+    </div>
+
+    <div class="login-heading">
+      <h2>Bienvenido</h2>
+      <p>Inicia sesión con tu correo institucional</p>
+    </div>
+
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="setRole('alumno')">🎓 Alumno</button>
+      <button class="role-tab" onclick="setRole('maestro')">👨‍🏫 Maestro</button>
+      <button class="role-tab" onclick="setRole('admin')">🔧 Administrador</button>
+    </div>
+
+    <div id="login-error" class="login-error">
+      Correo o contraseña incorrectos. Intenta de nuevo.
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Correo institucional</label>
+      <input id="login-email" class="form-input" type="email" placeholder="al45773@un.edu.mx">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Contraseña</label>
+      <input id="login-password" class="form-input" type="password" placeholder="••••••••">
+    </div>
+
+    <p style="font-size:12px; color:var(--gray-400); margin-bottom:4px; text-align:center;">
+      Alumno: <strong>al{matrícula}@un.edu.mx</strong> /
+      <strong>Uv.{matrícula}</strong><br>
+      Maestro: maestro@un.edu.mx / Maestro.2025<br>
+      Admin: admin@un.edu.mx / Admin.2025
+    </p>
+
+    <button class="btn-primary" onclick="handleLogin()">
+      Iniciar sesión →
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════ DASHBOARD ══════════════ -->
+<div id="screen-dashboard" class="screen">
+  <nav class="topnav">
+    <div class="topnav-brand">
+      <div class="topnav-brand-icon">🏛️</div>
+      <span class="topnav-brand-name">Solu<span>School</span></span>
+    </div>
+
+    <div class="topnav-right">
+      <div class="topnav-user">
+        <div class="topnav-avatar" id="nav-avatar">AU</div>
+
+        <div>
+          <div class="topnav-username" id="nav-name">Usuario</div>
+          <div class="topnav-role" id="nav-role">Alumno</div>
+        </div>
+      </div>
+
+      <button class="btn-logout" onclick="handleLogout()">Salir</button>
+    </div>
+  </nav>
+
+  <div class="dash-content">
+
+    <div class="dash-header">
+      <h2 id="dash-greeting">Buenos días</h2>
+      <p id="dash-subtitle">Aquí están tus reportes activos</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+
+      <div class="stat-card">
+        <div class="stat-card-label">Total reportes</div>
+        <div class="stat-card-value" id="stat-total">0</div>
+        <div class="stat-card-sub">enviados</div>
+      </div>
+
+      <div class="stat-card amber">
+        <div class="stat-card-label">Pendientes</div>
+        <div class="stat-card-value" id="stat-pending">0</div>
+        <div class="stat-card-sub">en espera</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-label">En proceso</div>
+        <div class="stat-card-value" id="stat-progress" style="color:var(--teal)">0</div>
+        <div class="stat-card-sub">atendiendo</div>
+      </div>
+
+      <div class="stat-card green">
+        <div class="stat-card-label">Resueltos</div>
+        <div class="stat-card-value" id="stat-done">0</div>
+        <div class="stat-card-sub">cerrados</div>
+      </div>
+
+    </div>
+
+    <div class="dash-grid">
+
+      <!-- Reports Panel -->
+      <div class="panel">
+
+        <div class="panel-header">
+
+          <div>
+            <div class="panel-title" id="reports-panel-title">
+              Mis Reportes
+            </div>
+
+            <div class="panel-subtitle" id="reports-panel-sub">
+              Historial de fallas reportadas
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; align-items:center;">
+
+            <div id="admin-filters" style="display:none">
+              <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterReports('all')">Todos</button>
+                <button class="filter-tab" onclick="filterReports('pending')">Pendientes</button>
+                <button class="filter-tab" onclick="filterReports('progress')">En proceso</button>
+                <button class="filter-tab" onclick="filterReports('done')">Resueltos</button>
+              </div>
+            </div>
+
+            <button class="btn-new" onclick="openNewReport()" id="btn-new-report">
+              ＋ Nuevo reporte
+            </button>
+
+          </div>
+        </div>
+
+        <div class="reports-list" id="reports-list">
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <h3>Sin reportes aún</h3>
+            <p>Cuando envíes un reporte aparecerá aquí</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Side Panel -->
+      <div>
+
+        <div class="panel" id="quick-report-panel">
+
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Reporte rápido</div>
+              <div class="panel-subtitle">Elige una categoría</div>
+            </div>
+          </div>
+
+          <div class="cat-grid" id="cat-grid"></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════ NEW REPORT MODAL ══════════════ -->
+
+<div id="modal-new" class="modal-overlay">
+
+  <div class="modal">
+
+    <div class="modal-header">
+      <h3>Nuevo reporte de falla</h3>
+
+      <button class="modal-close" onclick="closeModal('modal-new')">
+        ✕
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label class="form-label">Categoría de la falla *</label>
+        <div class="cat-picker" id="cat-picker"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Ubicación *</label>
+
+        <input
+          id="report-location"
+          class="form-input"
+          type="text"
+          placeholder="Ej: Edificio A, Aula 203">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Descripción de la falla *</label>
+
+        <textarea
+          id="report-desc"
+          class="form-input"
+          rows="4"
+          placeholder="Describe con detalle qué está fallando..."
+          style="resize:vertical; line-height:1.5;"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nivel de urgencia *</label>
+
+        <div class="urgency-group">
+          <button class="urgency-btn" onclick="setUrgency('baja')" id="urg-baja">🟢 Baja</button>
+          <button class="urgency-btn" onclick="setUrgency('media')" id="urg-media">🟡 Media</button>
+          <button class="urgency-btn" onclick="setUrgency('alta')" id="urg-alta">🔴 Alta</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-new')">
+        Cancelar
+      </button>
+
+      <button class="btn-submit" onclick="submitReport()">
+        Enviar reporte
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Modal Detalle -->
+<div id="modal-detail" class="modal-overlay">
+  <div class="modal">
+
+    <div class="modal-header">
+      <h3>Detalle del reporte</h3>
+
+      <button class="modal-close" onclick="closeModal('modal-detail')">
+        ✕
+      </button>
+    </div>
+
+    <div class="modal-body" id="modal-detail-body"></div>
+
+    <div class="modal-footer" id="modal-detail-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-detail')">
+        Cerrar
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<link rel="stylesheet" href="styles.css">
+<script src="script.js"></script>
+
+</body>
+</html>

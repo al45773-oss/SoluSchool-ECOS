@@ -1,1 +1,1 @@
-# SoluSchool-ECOS
+# SoluSchool-Proyecto
